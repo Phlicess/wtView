@@ -1,0 +1,37 @@
+<% sources[sid].vector_layers.forEach(function (layer) { %>
+
+  var layerColor = '#' + randomColor(lightColors);
+
+  console.log('layers', '<%= layer.id %>');
+
+  map.addLayer({
+    'id': '<%= layer.id %>-lines',
+    'type': 'fill',
+    'source': '<%= sid %>',
+    'source-layer': '<%= layer.id %>',
+    //'layout': {
+     // 'visibility': 'visible'
+    //},
+    'paint': {
+      'fill-color': 'rgba(100, 34,213, .5)',
+      'fill-outline-color': layerColor
+    },
+    filter: ['!=', 'color', 'ccc']
+  });
+
+  map.addLayer({
+    'id': '<%= layer.id %>-pts',
+    'type': 'circle',
+    'source': '<%= sid %>',
+    'source-layer': '<%= layer.id %>',
+    'filter': ["==", "$type", "Point"],
+    'paint': {
+      'circle-color': layerColor,
+      'circle-radius': 2
+    }
+  });
+
+  layers.lines.push('<%= layer.id %>-lines');
+  layers.pts.push('<%= layer.id %>-pts');
+
+<% }); %>

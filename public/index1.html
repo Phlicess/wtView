@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset='utf-8' />
+        <title></title>
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <script src='mapbox-gl.js'></script>
+        <link href='mapbox-gl.cs' rel='stylesheet' />
+        <link href='https://www.mapbox.com/base/latest/base.css' rel='stylesheet' />
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            #map {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 100%;
+            }
+
+        </style>
+    </head>
+
+    <body>
+
+
+        <div id='map'></div>
+
+        <script>
+
+mapboxgl.accessToken = 'pk.eyJ1IjoicGhsaWNlc3MiLCJhIjoiY2l0anl5aWwzMDltZjJubzNqM291YWZkaSJ9.g4RaEz1aVfu5FfY2Ho1-SQ';
+var map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/<%= basemap %>-v8',
+  center: [120, 48],
+  zoom: 8,
+  hash: true,
+  maxZoom: 30
+});
+
+var layers = {
+  pts: [],
+  lines: []
+}
+
+var lightColors = [
+  'FC49A3', // pink
+  'CC66FF', // purple-ish
+  '66CCFF', // sky blue
+  '66FFCC', // teal
+  '00FF00', // lime green
+  'FFCC66', // light orange
+  'FF6666', // salmon
+  'FF0000', // red
+  'FF8000', // orange
+  'FFFF66', // yellow
+  '00FFFF'  // turquoise
+];
+
+function randomColor(colors) {
+  var randomNumber = parseInt(Math.random() * colors.length);
+  return colors[randomNumber];
+}
+
+map.on('load', function () {
+    console.log('sources', 'fuck70wgeojson');
+
+    map.addSource('tests', {
+      type: 'vector',
+      tiles: [
+        'http://localhost:3001/fuck70w.mbtiles/{z}/{x}/{y}.pbf'
+      ],
+      maxzoom: 8
+    });
+
+    var layerColor = '#' + randomColor(lightColors);
+
+    console.log('layers', '<%= layer.id %>');
+
+    map.addLayer({
+        'id': 'fuck70wgeojson-lines',
+        'type': 'fill',
+        'source': 'tests',
+        'source-layer': 'fuck70wgeojson',
+        //'layout': {
+        //  'line-join': 'round',
+        //  'line-cap': 'round'
+        //},
+        'paint': {
+        'fill-color': 'rgba(100, 34,213, .5)',
+        'fill-outline-color': layerColor
+        },
+        filter: ['!=', 'color', 'bbbbbb']
+    });
+});
+
+
+
+  map.on('click', function(e){
+      var features = map.queryRenderedFeatures(e.point, {
+          layers: ['fuck70wgeojson-lines']
+      });
+
+      if (!features.length) {
+          return;
+      }
+
+
+      var feature = features[0];
+
+
+      console.log('已经点击');
+      console.log(feature._vectorTileFeature)
+      var v = feature._vectorTileFeature;
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function(e){
+        if( xhr.readyState == 4  && xhr.status == 200 ){
+          console.log(e.target.responseText);
+          // document.getElementByIdx_x_x_x( 'sub' ).value =  xhr.responseText;
+
+          var tt = map.getSource('fuck70w.mbtiles');
+          console.log(tt);
+
+          map.setFilter('fuck70wgeojson-lines', ['==', 'color', 'bbbbbb']);
+
+          // console.log(tt);
+
+          // 重新加载瓦片
+          tt._pyramid.clearTiles();
+          tt._pyramid.upload();
+          tt._pyramid.reload();
+        }
+      }
+
+      console.log(feature);
+      // 获取geometry的边界
+      var bounds = [],
+        maxll = [],
+        minll = [];
+
+      feature.geometry.coordinates[0].forEach(function(item, index){
+        maxll[0] = (!maxll[0] || item[0] > maxll[0]) ? item[0] : maxll[0];
+        maxll[1] = (!maxll[1] || item[1] > maxll[1]) ? item[1] : maxll[1];
+
+        minll[0] = (!minll[0] || item[0] < minll[0]) ? item[0] : minll[0];
+        minll[1] = (!minll[1] || item[1] < minll[1]) ? item[1] : minll[1];
+      });
+
+      bounds.push(minll);
+      bounds.push(maxll);
+
+       xhr.open( "POST", 'http://localhost:3001/fuck70w.mbtiles/fuck70wgeojson/' + bounds + '/' + v._z + '/' + v._x + '/' + v._y + '.pbf?OBJECTID=' + feature.properties.OBJECTID, true );
+       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+       //xhr.send("color=aaaaa&queryBounds=" + bounds);
+       xhr.send("color=bbbbbb");
+
+      console.log('已经发送');
+  })
+
+</script>
+
+    </body>
+
+</html>

@@ -1,0 +1,52 @@
+{
+  "name": "mbview",
+  "version": "1.7.0",
+  "description": "Watch mbtiles in your localhost",
+  "bin": {
+    "mbview": "./cli.js"
+  },
+  "main": "server.js",
+  "scripts": {
+    "lint": "eslint *.js test/",
+    "pretest": "npm run lint",
+    "test": "tape test/*.test.js",
+    "start": "node cli.js"
+  },
+  "keywords": [
+    "localhost",
+    "mapbox",
+    "mbtiles"
+  ],
+  "author": "Rodolfo Wilhelmy <rwilhelmy@gmail.com> (http://wilhel.me)",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^2.13.1",
+    "supertest": "^1.2.0",
+    "tape": "^4.5.1"
+  },
+  "dependencies": {
+    "bf": "^0.1.2",
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
+    "d3-queue": "^2.0.3",
+    "ejs": "^2.4.1",
+    "express": "^4.13.4",
+    "mbtiles": "^0.9.0",
+    "minimist": "^1.2.0",
+    "object-assign": "^4.1.0",
+    "open": "0.0.5",
+    "pbf": "^3.0.2",
+    "sphericalmercator": "^1.0.5",
+    "turf": "^3.0.14",
+    "vector-tile": "^1.3.0",
+    "vt-pbf": "^2.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mapbox/mbview.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mapbox/mbview/issues"
+  },
+  "homepage": "https://github.com/mapbox/mbview#readme"
+}
